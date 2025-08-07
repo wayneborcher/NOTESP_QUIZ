@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>not.ESP Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    #score {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: #FFD700;
+    }
+    .quiz-box {
+      background-color: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 15px;
+      display: inline-block;
+      max-width: 100%;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+    .prompt {
+      font-size: 4em;
+      margin-bottom: 30px;
+      word-wrap: break-word;
+    }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .choices button {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      margin: 10px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      flex: 1 1 calc(50% - 20px);
+      max-width: 200px;
+    }
+    .choices button:hover {
+      background-color: #5c6bc0;
+      transform: scale(1.05);
+    }
+    .emoji-button {
+      font-size: 2.5em !important;
+      padding: 15px 0 !important;
+    }
+    #result {
+      font-size: 1.5em;
+      margin-top: 20px;
+    }
+    #mode-toggle {
+      margin-top: 30px;
+      font-size: 1em;
+      padding: 10px 20px;
+      background-color: #666;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+    }
+
+    @keyframes correctPulse {
+      0% { background-color: #4CAF50; transform: scale(1); }
+      50% { background-color: #81C784; transform: scale(1.1); }
+      100% { background-color: #4CAF50; transform: scale(1); }
+    }
+
+    @keyframes wrongShake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .correct-animate {
+      animation: correctPulse 0.5s ease;
+    }
+
+    .wrong-animate {
+      animation: wrongShake 0.4s ease;
+    }
+
+    @media screen and (max-width: 600px) {
+      .prompt {
+        font-size: 3em;
+      }
+      .choices button {
+        font-size: 1em;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>not.ESP Quiz</h1>
+  <div id="score">Correct: 0 | Wrong: 0 | Total: 0</div>
+  <div class="quiz-box">
+    <div class="prompt" id="prompt"></div>
+    <div class="choices" id="choices"></div>
+    <div id="result"></div>
+    <button id="mode-toggle" onclick="toggleMode()">Switch Mode</button>
+  </div>
+
+  <audio id="correct-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_493b5c4062.mp3?filename=correct-answer-2-89665.mp3" preload="auto"></audio>
+  <audio id="wrong-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f61b637fef.mp3?filename=wrong-answer-2-89674.mp3" preload="auto"></audio>
+
+  <script>
+    const data = {
+      "🔴": "wonderful", "➕": "towards", "🌊": "free", "🔺": "fair choice",
+      "🟨": "fantastic", "⭐": "finally", "🧍‍♂️": "human", "😀": "zoomed",
+      "❤️": "affectionate", "🚤": "serene", "🏠": "wholesome", "🚴‍♂️": "movement",
+      "🚗": "speed", "🚂": "momentum", "✈️": "take flight", "🚀": "outer space",
+      "⛩": "surface", "📺": "visual", "☎️": "communicate", "📖": "literature",
+      "🍷": "drink from", "✏️": "artistic", "🔐": "security", "⏰": "keeping time",
+      "🔪": "sharp", "🔫": "lethal", "🌳": "natural", "🌻": "organic",
+      "☀️": "painting", "🌙": "night sky", "🌧️": "weather", "⚡": "powerful",
+      "🐶": "loyal", "🐱": "living", "🐟": "underwater", "🦜": "in the sky",
+      "👽": "weirdly", "👻": "spooky", "💀": "morbid", "📝": "nothing",
+      "🖕": "offensive", "🚫": "negative", "🍆": "strangely"
+    };
+
+    const entries = Object.entries(data);
+    let scoreCorrect = 0, scoreWrong = 0;
+    let isWordMode = false;
+    let correctAnswer = null;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function updateScore() {
+      const total = scoreCorrect + scoreWrong;
+      document.getElementById("score").textContent = `Correct: ${scoreCorrect} | Wrong: ${scoreWrong} | Total: ${total}`;
+    }
+
+    function generateQuestion() {
+      const container = document.getElementById("choices");
+
+      // Reset all styles and content
+      Array.from(container.children).forEach(btn => {
+        btn.style.backgroundColor = "";
+        btn.classList.remove("correct-animate", "wrong-animate");
+      });
+
+      container.innerHTML = "";
+      document.getElementById("result").textContent = "";
+
+      const [emoji, word] = entries[Math.floor(Math.random() * entries.length)];
+      correctAnswer = isWordMode ? emoji : word;
+      document.getElementById("prompt").textContent = isWordMode ? word : emoji;
+
+      const options = new Set([correctAnswer]);
+      while (options.size < 5) {
+        const rand = entries[Math.floor(Math.random() * entries.length)];
+        const opt = isWordMode ? rand[0] : rand[1];
+        options.add(opt);
+      }
+
+      shuffle([...options]).forEach(choice => {
+        const button = document.createElement("button");
+        button.innerHTML = choice;
+        if (isWordMode) button.classList.add("emoji-button");
+        button.onclick = () => checkAnswer(choice);
+        container.appendChild(button);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const result = document.getElementById("result");
+      const buttons = document.querySelectorAll("#choices button");
+      const correctSound = document.getElementById("correct-sound");
+      const wrongSound = document.getElementById("wrong-sound");
+
+      buttons.forEach(btn => {
+        const value = btn.innerHTML;
+        btn.disabled = true;
+        if (value === correctAnswer) {
+          btn.style.backgroundColor = "#4CAF50";
+          btn.classList.add("correct-animate");
+        } else if (value === selected) {
+          btn.style.backgroundColor = "#E53935";
+          btn.classList.add("wrong-animate");
+        } else {
+          btn.style.backgroundColor = "#333";
+        }
+      });
+
+      if (selected === correctAnswer) {
+        scoreCorrect++;
+        correctSound.play();
+        result.innerHTML = "✅ Correct!";
+      } else {
+        scoreWrong++;
+        wrongSound.play();
+        result.innerHTML = `❌ Wrong! Correct answer was: <strong>${correctAnswer}</strong>`;
+      }
+
+      updateScore();
+      setTimeout(generateQuestion, 1700);
+    }
+
+    function toggleMode() {
+      isWordMode = !isWordMode;
+      document.getElementById("mode-toggle").textContent = isWordMode ? "Switch to Emoji Quiz" : "Switch to Word Quiz";
+      generateQuestion();
+    }
+
+    window.onload = () => {
+      updateScore();
+      generateQuestion();
+    };
+  </script>
+</body>
+</html>

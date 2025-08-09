@@ -2,55 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NOT.ESP QUIZ — v2.2</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root{--bg1:#141625;--bg2:#2a2e45;--accent:#7c5cff;--accent-2:#22c55e;--danger:#ef4444;--card:rgba(255,255,255,.08);--text:#ffffff;--muted:#c7c9d1;--gold:#ffd54a}
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 10% 10%,var(--bg2),transparent),linear-gradient(135deg,var(--bg1),#191b2e);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
-    .app{width:100%;max-width:900px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-    .title{font-weight:800;letter-spacing:.5px;font-size:clamp(20px,3vw,28px)}
-    .scorebar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .chip{background:var(--card);border:1px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:999px;font-size:13px}
-    .chip b{color:var(--gold)}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:16px;padding:20px}
-    .prompt{font-size:clamp(44px,8vw,84px);line-height:1;margin:8px 0 4px;text-align:center}
-    .sub{margin:0 0 6px;color:var(--muted);text-align:center}
-    .progress{height:8px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:10px auto 0;width:100%}
-    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%}
-
-    .choices-wrap{position:relative;margin-top:18px}
-    .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    @media (min-width:760px){.choices{grid-template-columns:repeat(5,minmax(0,1fr))}}
-
-    .choice{display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.22);background:#1e2143;padding:14px 12px;border-radius:12px;font-size:clamp(18px,2.6vw,20px);line-height:1.25;color:#ffffff;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-    .choice.emoji{font-size:clamp(34px,5.8vw,44px);padding-block:18px;color:#ffffff}
-    .choice:hover{transform:translateY(-2px);background:#2a2e5a;border-color:rgba(255,255,255,.35);box-shadow:0 4px 14px rgba(0,0,0,.35)}
-    .choice.correct{background:linear-gradient(90deg,rgba(34,197,94,.28),rgba(34,197,94,.18));border-color:#22c55e;color:#ffffff}
-    .choice.wrong{background:linear-gradient(90deg,rgba(239,68,68,.32),rgba(239,68,68,.18));border-color:#ef4444;color:#ffffff}
-
-    .overlay{position:absolute;inset:0;background:rgba(0,0,0,1);display:flex;align-items:center;justify-content:center;border-radius:12px;opacity:1;transition:opacity .35s ease;z-index:5;padding:16px}
-    .overlay.hidden{opacity:0;pointer-events:none}
-    .overlay-box{width:100%;max-width:520px;background:#0b0e1f;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    .overlay-box h3{margin:0 0 10px 0;font-size:16px;color:#e5e7eb}
-    .overlay-row{display:flex;gap:8px}
-    .overlay-row input{flex:1;border-radius:10px;border:none;padding:12px 12px;font-size:16px}
-    .overlay-row button{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none;border-radius:10px;color:#fff;padding:12px 14px;font-weight:700;cursor:pointer}
-    .overlay-hint{font-size:12px;color:#a3a3a3;margin-top:8px}
-
-    .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
-    .btn{background:#2d3258;border:1px solid rgba(255,255,255,.16);color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
-
-    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;border:1px solid rgba(255,255,255,.15);padding:10px 14px;border-radius:10px;opacity:0;transition:opacity .25s ease;z-index:60}
-    .toast.show{opacity:1}
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOT.ESP QUIZ — PWA</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#141625" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+    }
+  </script>
 </head>
 <body>
   <div class="app">
     <header>
       <div class="title">NOT.ESP QUIZ</div>
+      <div class="spacer"></div>
+      <button id="settingsBtn" class="iconbtn" title="Edit Words" aria-label="Edit Words">⚙️</button>
       <div class="scorebar">
         <div class="chip">✅ <b id="ok">0</b></div>
         <div class="chip">❌ <b id="ko">0</b></div>
@@ -60,314 +29,68 @@
     </header>
 
     <section class="card">
-      <div class="sub" id="modeLabel">Mode: Emoji → Word</div>
-      <div class="prompt" id="prompt">🙂</div>
-      <div class="progress"><span id="progressFill"></span></div>
+      <nav class="tabs" role="tablist">
+        <button class="tab" data-mode="0" role="tab" aria-selected="false">Emoji → Word (Type)</button>
+        <button class="tab" data-mode="1" role="tab" aria-selected="false">Word → Emoji (Icons)</button>
+        <button class="tab" data-mode="2" role="tab" aria-selected="false">Emoji → Word (Words)</button>
+      </nav>
 
-      <div class="choices-wrap">
-        <div class="overlay" id="overlay">
+      <div class="mode" id="modeLabel">Mode</div>
+      <div class="prompt" id="prompt">🙂</div>
+
+      <div class="mc-region">
+        <div class="overlay hidden" id="overlay">
           <div class="overlay-box">
             <h3 id="overlayTitle">Type your guess (word), then reveal</h3>
             <div class="overlay-row" id="preGuessRow">
-              <input id="preGuessInput" type="text" placeholder="Your guess..." autocomplete="off" />
-              <button id="revealBtn">Reveal</button>
+              <input id="preGuessInput" type="text" placeholder="Your guess..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" />
+              <button id="revealBtn" class="btn primary">Reveal</button>
             </div>
             <div class="overlay-hint" id="overlayHint">Press Enter to reveal</div>
           </div>
         </div>
-        <div id="choices" class="choices"></div>
-      </div>
 
-      <div class="controls">
-        <button class="btn" id="toggleMode">Switch Mode</button>
-        <button class="btn" id="reviewBtn">Review</button>
-        <button class="btn" id="editBtn">Edit Icons</button>
-        <button class="btn" id="resetBtn">Reset</button>
-        <button class="btn" id="downloadBtn">Download JSON</button>
-        <input type="file" id="uploadInput" accept="application/json" hidden />
-        <button class="btn" id="uploadBtn">Upload JSON</button>
+        <div id="resultBanner" class="result-banner" role="status" aria-live="polite"></div>
+        <div id="choices" class="choices"></div>
       </div>
     </section>
   </div>
 
+  <!-- Editor Modal -->
+  <div id="editorModal" class="editor hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="editor-panel">
+      <div class="editor-head">
+        <h2>Edit Icon–Word Pairs</h2>
+        <div class="spacer"></div>
+        <input id="editorSearch" class="editor-search" type="text" placeholder="Search…" />
+        <button id="editorClose" class="btn ghost">Close</button>
+      </div>
+      <div class="editor-toolbar">
+        <button id="editorAdd" class="btn primary">Add Pair</button>
+        <button id="editorSave" class="btn">Save & Apply</button>
+        <button id="editorExport" class="btn">Export JSON</button>
+        <input type="file" id="editorImportFile" accept="application/json" hidden />
+        <button id="editorImport" class="btn">Import JSON</button>
+        <button id="editorReset" class="btn danger">Reset to Defaults</button>
+      </div>
+      <div id="editorList" class="editor-list"></div>
+      <div class="editor-foot">Changes persist in your browser. Export for backup.</div>
+    </div>
+  </div>
+
+  <!-- Emoji Picker Modal -->
+  <div id="emojiPicker" class="picker hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="picker-panel">
+      <div class="picker-head">
+        <h3>Select an icon</h3>
+        <div class="spacer"></div>
+        <button id="pickerClose" class="btn ghost">Close</button>
+      </div>
+      <div id="pickerGrid" class="picker-grid"></div>
+      <div class="picker-foot">Tip: Icons must be unique in your set.</div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
-
-<script>
-(() => {
-  // ------- Data (kept from previous version via localStorage) -------
-  const DEFAULT_DATA = {"🔴":"wonderful","➕":"towards","🌊":"free","🔺":"fair choice","🟨":"fantastic","⭐":"finally","🧍‍♂️":"human","😀":"zoomed","❤️":"affectionate","🚤":"serene","🏠":"wholesome","🚴‍♂️":"movement","🚗":"speed","🚂":"momentum","✈️":"take flight","🚀":"outer space","⛩":"surface","📺":"visual","☎️":"communicate","📖":"literature","🍷":"drink from","✏️":"artistic","🔐":"security","⏰":"keeping time","🔪":"sharp","🔫":"lethal","🌳":"natural","🌻":"organic","☀️":"painting","🌙":"night sky","🌧️":"weather","⚡":"powerful","🐶":"loyal","🐱":"living","🐟":"underwater","🦜":"in the sky","👽":"weirdly","👻":"spooky","💀":"morbid","📝":"nothing","🖕":"offensive","🚫":"negative","🍆":"strangely"};
-  const LS_KEY_DATA = 'notesp-quiz';
-  const LS_KEY_STATE = 'notesp-quiz-state-v2';
-
-  function loadData(){ try { return JSON.parse(localStorage.getItem(LS_KEY_DATA)) || {...DEFAULT_DATA}; } catch { return {...DEFAULT_DATA}; } }
-  function saveData(obj){ localStorage.setItem(LS_KEY_DATA, JSON.stringify(obj)); }
-
-  function loadState(data){
-    const base = Object.keys(data).map(k=>({ emoji:k, word:data[k], box:1, seen:0, correctStreak:0, lastSeen:-1 }));
-    try{
-      const saved = JSON.parse(localStorage.getItem(LS_KEY_STATE));
-      if(!saved) return base;
-      const map = new Map(base.map(i=>[i.emoji,i]));
-      for(const it of saved){ if(map.has(it.emoji)){ Object.assign(map.get(it.emoji), it); } }
-      return [...map.values()];
-    }catch{ return base; }
-  }
-  function saveState(){ localStorage.setItem(LS_KEY_STATE, JSON.stringify(items)); }
-
-  // ------- Elements -------
-  const el = {
-    prompt: document.getElementById('prompt'),
-    choices: document.getElementById('choices'),
-    overlay: document.getElementById('overlay'),
-    overlayTitle: document.getElementById('overlayTitle'),
-    overlayHint: document.getElementById('overlayHint'),
-    preGuessRow: document.getElementById('preGuessRow'),
-    preGuessInput: document.getElementById('preGuessInput'),
-    revealBtn: document.getElementById('revealBtn'),
-    ok: document.getElementById('ok'), ko: document.getElementById('ko'), acc: document.getElementById('acc'), streak: document.getElementById('streak'),
-    progressFill: document.getElementById('progressFill'),
-    modeLabel: document.getElementById('modeLabel'),
-    // controls
-    toggleMode: document.getElementById('toggleMode'),
-    reviewBtn: document.getElementById('reviewBtn'),
-    editBtn: document.getElementById('editBtn'),
-    resetBtn: document.getElementById('resetBtn'),
-    downloadBtn: document.getElementById('downloadBtn'),
-    uploadBtn: document.getElementById('uploadBtn'),
-    uploadInput: document.getElementById('uploadInput'),
-    toast: document.getElementById('toast'),
-  };
-
-  // ------- Engine state -------
-  let data = loadData();
-  let items = loadState(data);
-  let isWordMode = false; // false: Emoji->Word (has pre-guess), true: Word->Emoji
-  let lastIndex = -1;
-  let questionCounter = 0;
-  let correct = 0, wrong = 0, streak = 0;
-
-  // coverage + delayed review
-  let cycleOrder = shuffle([...Array(items.length).keys()]);
-  let cyclePtr = 0;
-  const delayedQueue = []; // {idx, due}
-
-  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
-  function normalize(s){
-      s = (s||'').toLowerCase().trim();
-      try { s = s.replace(new RegExp('[^A-Za-z0-9 ]','g'), ''); } catch(e) {}
-      s = s.replace(new RegExp(' +','g'), ' ');
-      return s;
-    }
-
-  function scheduleReview(idx){ delayedQueue.push({ idx, due: questionCounter + randInt(5,10) }); }
-
-  function nextIndex(){
-    // Any due delayed reviews?
-    const dueIdx = delayedQueue.findIndex(x => x.due <= questionCounter);
-    if(dueIdx >= 0){ return delayedQueue.splice(dueIdx,1)[0].idx; }
-
-    // Coverage cycle
-    if (cyclePtr < cycleOrder.length){
-      const idx = cycleOrder[cyclePtr++];
-      if(idx !== lastIndex) return idx;
-    }
-    if (cyclePtr >= cycleOrder.length){
-      const weights = items.map((it,idx)=>({ idx, w: Math.max(1, (6 - it.box)) }));
-      cycleOrder = [];
-      while (weights.length){
-        const total = weights.reduce((s,o)=>s+o.w,0);
-        let r = Math.random()*total; let pick=0;
-        for(let i=0;i<weights.length;i++){ r -= weights[i].w; if(r<=0){ pick=i; break; } }
-        cycleOrder.push(weights[pick].idx);
-        weights.splice(pick,1);
-      }
-      cyclePtr = 0;
-    }
-    const idx = cycleOrder[cyclePtr++];
-    if (idx === lastIndex && cyclePtr < cycleOrder.length) return cycleOrder[cyclePtr++];
-    return idx;
-  }
-
-  let currentIdx = -1;
-  let currentCorrectAnswer = null;
-
-  function renderQuestion(){
-    el.choices.innerHTML = '';
-    currentIdx = nextIndex();
-    const it = items[currentIdx];
-    const promptText = isWordMode ? it.word : it.emoji;
-    currentCorrectAnswer = isWordMode ? it.emoji : it.word;
-    el.prompt.textContent = promptText;
-    el.modeLabel.textContent = isWordMode ? 'Mode: Word → Emoji' : 'Mode: Emoji → Word';
-
-    // Build choices (5, including correct)
-    const pool = items.map(x => isWordMode ? x.emoji : x.word);
-    const choices = new Set([currentCorrectAnswer]);
-    while (choices.size < 5){ const cand = pool[Math.floor(Math.random()*pool.length)]; if(!choices.has(cand)) choices.add(cand); }
-    const finalChoices = shuffle([...choices]);
-
-    for(const option of finalChoices){
-      const btn = document.createElement('button');
-      btn.className = 'choice' + (isWordMode ? ' emoji' : '');
-      btn.textContent = option;
-      btn.onclick = () => onAnswer(option, btn);
-      el.choices.appendChild(btn);
-    }
-
-    // Configure overlay pre-guess UI
-    el.preGuessInput.value = '';
-    if(!isWordMode){
-      el.overlayTitle.textContent = 'Type your guess (word), then reveal';
-      el.overlayHint.textContent = 'Press Enter or tap Reveal';
-      el.preGuessRow.style.display = 'flex';
-      el.preGuessInput.placeholder = 'Your guess for the word...';
-      setTimeout(()=>{ el.preGuessInput.focus(); }, 10);
-    } else {
-      el.overlayTitle.textContent = 'Tap to reveal choices';
-      el.overlayHint.textContent = '';
-      el.preGuessRow.style.display = 'none';
-    }
-    el.overlay.classList.remove('hidden');
-
-    // progress
-    const seenThisCycle = new Set(items.filter(i=>i.seen>0).map(i=>i.emoji));
-    const pct = Math.round((Math.min(seenThisCycle.size, items.length) / items.length) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-  }
-
-  function applyCorrectAutoAdvance(){
-    const it = items[currentIdx];
-    it.seen++; it.lastSeen = questionCounter++;
-    correct++; streak++; it.correctStreak++; if(it.box < 5 && it.correctStreak >= 2){ it.box++; it.correctStreak = 0; }
-    lastIndex = currentIdx; saveState(); updateHud();
-    setTimeout(()=>renderQuestion(), 900);
-  }
-
-  function onAnswer(sel, button){
-    [...document.querySelectorAll('.choice')].forEach(b=>b.classList.remove('correct','wrong'));
-
-    // Use forgiving normalization only in Emoji → Word mode (text answers)
-    const isCorrect = (!isWordMode)
-      ? (normalize(sel) === normalize(currentCorrectAnswer))
-      : (sel === currentCorrectAnswer);
-
-    const it = items[currentIdx];
-    it.seen++; it.lastSeen = questionCounter++;
-
-    if(isCorrect){
-      correct++; streak++; it.correctStreak++; if(it.box < 5 && it.correctStreak >= 2){ it.box++; it.correctStreak = 0; }
-      button.classList.add('correct');
-      toast('✅ Correct');
-    } else {
-      wrong++; streak = 0; it.correctStreak = 0; it.box = 1;
-      button.classList.add('wrong');
-      // schedule revisit 5–10 questions later
-      scheduleReview(currentIdx);
-      // highlight the correct option (normalized match for text mode)
-      const right = [...document.querySelectorAll('.choice')].find(b => (
-        !isWordMode ? (normalize(b.textContent) === normalize(currentCorrectAnswer))
-                     : (b.textContent === currentCorrectAnswer)
-      ));
-      if(right) right.classList.add('correct');
-      toast('❌ Wrong');
-    }
-
-    lastIndex = currentIdx; saveState(); updateHud();
-    setTimeout(()=>renderQuestion(), 900);
-  }
-
-  function updateHud(){
-    const total = correct + wrong;
-    document.getElementById('ok').textContent = String(correct);
-    document.getElementById('ko').textContent = String(wrong);
-    document.getElementById('acc').textContent = total ? Math.round((correct/total)*100)+'%' : '0%';
-    document.getElementById('streak').textContent = String(streak);
-  }
-
-  // Overlay interactions
-  el.revealBtn.addEventListener('click', handleReveal);
-  el.preGuessInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ handleReveal(); }});
-
-  function handleReveal(){
-    // Only evaluate pre-guess in Emoji→Word mode
-    const pre = normalize(el.preGuessInput.value);
-    const isPreGuessApplicable = !isWordMode;
-    el.overlay.classList.add('hidden');
-
-    if(isPreGuessApplicable && pre){
-      const correctWord = normalize(currentCorrectAnswer);
-      if(pre === correctWord){
-        // highlight correct and auto-advance, count as correct
-        const right = [...document.querySelectorAll('.choice')].find(b=>normalize(b.textContent)===correctWord);
-        if(right) right.classList.add('correct');
-        toast('✅ Nice! Your guess was right.');
-        applyCorrectAutoAdvance();
-        return;
-      } else {
-        toast('Not quite — choose one below.');
-        // do NOT count as wrong yet; user still answers
-      }
-    }
-  }
-
-  // Controls
-  document.getElementById('toggleMode').addEventListener('click', ()=>{ isWordMode = !isWordMode; renderQuestion(); });
-  document.getElementById('reviewBtn').addEventListener('click', ()=>{
-    // Simple toggle: show last 12 attempts
-    el.overlay.classList.add('hidden');
-    const hist = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
-    el.choices.innerHTML = '';
-    const last = hist.slice(-12).reverse();
-    for(const h of last){
-      const div = document.createElement('div');
-      div.className='choice';
-      div.style.justifyContent='space-between';
-      div.innerHTML = `<span>${h.prompt}</span><span>${h.selected === h.correct ? '✅' : '❌'} <small style="opacity:.8">(${h.correct})</small></span>`;
-      el.choices.appendChild(div);
-    }
-  });
-
-  document.getElementById('editBtn').addEventListener('click', ()=>{
-    // open a simple alert to suggest using the previous advanced editor build
-    alert('Editor is available in the PWA build. For now, use Download/Upload JSON to modify pairs.');
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', ()=>{
-    if(confirm('Reset words and progress to defaults?')){
-      saveData(DEFAULT_DATA); data = loadData(); items = loadState(data);
-      correct=0; wrong=0; streak=0; lastIndex=-1; cycleOrder=shuffle([...Array(items.length).keys()]); cyclePtr=0; delayedQueue.length=0;
-      saveState(); updateHud(); renderQuestion(); toast('Reset complete');
-    }
-  });
-
-  document.getElementById('downloadBtn').addEventListener('click', ()=>{
-    const blob = new Blob([JSON.stringify(Object.fromEntries(items.map(i=>[i.emoji,i.word])), null, 2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `notesp-quiz-${new Date().toISOString().slice(0,10)}.json`; a.click();
-  });
-  document.getElementById('uploadBtn').addEventListener('click', ()=> document.getElementById('uploadInput').click());
-  document.getElementById('uploadInput').addEventListener('change', e=>{
-    const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => {
-      try { const obj = JSON.parse(r.result); saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; delayedQueue.length=0; renderQuestion(); toast('Words loaded'); }
-      catch { alert('Invalid JSON file.'); }
-    }; r.readAsText(f);
-  });
-
-  // History capture
-  function pushHistory(entry){
-    const arr = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
-    arr.push(entry); if(arr.length>200) arr.shift();
-    localStorage.setItem('notesp-quiz-history', JSON.stringify(arr));
-  }
-  const _onAnswer = onAnswer;
-  onAnswer = function(sel, btn){ const promptVal = el.prompt.textContent; pushHistory({ prompt: promptVal, selected: sel, correct: currentCorrectAnswer, ts: Date.now() }); _onAnswer(sel, btn); }
-
-  // boot
-  updateHud();
-  renderQuestion();
-
-  function toast(msg){ el.toast.textContent = msg; el.toast.classList.add('show'); setTimeout(()=>el.toast.classList.remove('show'), 1100); }
-})();
-</script>
 </body>
 </html>

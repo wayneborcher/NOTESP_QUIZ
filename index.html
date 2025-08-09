@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NOT.ESP QUIZ — v2</title>
+  <meta charset="UTF-8" />
+  <title>NOT.ESP QUIZ — v2.2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#141625"/>
   <style>
-    :root{
-      --bg1:#141625;--bg2:#2a2e45;--accent:#7c5cff;--accent-2:#22c55e;--danger:#ef4444;--card:rgba(255,255,255,.08);
-      --text:#ffffff;--muted:#c7c9d1;--gold:#ffd54a;
-    }
+    :root{--bg1:#141625;--bg2:#2a2e45;--accent:#7c5cff;--accent-2:#22c55e;--danger:#ef4444;--card:rgba(255,255,255,.08);--text:#ffffff;--muted:#c7c9d1;--gold:#ffd54a}
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 10% 10%,var(--bg2),transparent),linear-gradient(135deg,var(--bg1),#191b2e);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 10% 10%,var(--bg2),transparent),linear-gradient(135deg,var(--bg1),#191b2e);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
     .app{width:100%;max-width:900px}
     header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
     .title{font-weight:800;letter-spacing:.5px;font-size:clamp(20px,3vw,28px)}
@@ -24,29 +19,30 @@
     .sub{margin:0 0 6px;color:var(--muted);text-align:center}
     .progress{height:8px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:10px auto 0;width:100%}
     .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%}
+
     .choices-wrap{position:relative;margin-top:18px}
     .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     @media (min-width:760px){.choices{grid-template-columns:repeat(5,minmax(0,1fr))}}
-    .choice{display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.22);background:#1e2143;padding:14px 12px;border-radius:12px;font-size:clamp(18px,2.6vw,20px);line-height:1.25;color:#ffffff;font-weight:600;letter-spacing:.2px;cursor:pointer;transition:transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+
+    .choice{display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.22);background:#1e2143;padding:14px 12px;border-radius:12px;font-size:clamp(18px,2.6vw,20px);line-height:1.25;color:#ffffff;font-weight:700;letter-spacing:.2px;cursor:pointer;transition:transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.25)}
     .choice.emoji{font-size:clamp(34px,5.8vw,44px);padding-block:18px;color:#ffffff}
     .choice:hover{transform:translateY(-2px);background:#2a2e5a;border-color:rgba(255,255,255,.35);box-shadow:0 4px 14px rgba(0,0,0,.35)}
     .choice.correct{background:linear-gradient(90deg,rgba(34,197,94,.28),rgba(34,197,94,.18));border-color:#22c55e;color:#ffffff}
     .choice.wrong{background:linear-gradient(90deg,rgba(239,68,68,.32),rgba(239,68,68,.18));border-color:#ef4444;color:#ffffff}
-    .overlay{position:absolute;inset:0;background:rgba(0,0,0,1);display:flex;align-items:center;justify-content:center;border-radius:12px;opacity:1;transition:opacity .35s ease;z-index:5}
+
+    .overlay{position:absolute;inset:0;background:rgba(0,0,0,1);display:flex;align-items:center;justify-content:center;border-radius:12px;opacity:1;transition:opacity .35s ease;z-index:5;padding:16px}
     .overlay.hidden{opacity:0;pointer-events:none}
-    .overlay button{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none;border-radius:999px;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}
+    .overlay-box{width:100%;max-width:520px;background:#0b0e1f;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .overlay-box h3{margin:0 0 10px 0;font-size:16px;color:#e5e7eb}
+    .overlay-row{display:flex;gap:8px}
+    .overlay-row input{flex:1;border-radius:10px;border:none;padding:12px 12px;font-size:16px}
+    .overlay-row button{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none;border-radius:10px;color:#fff;padding:12px 14px;font-weight:700;cursor:pointer}
+    .overlay-hint{font-size:12px;color:#a3a3a3;margin-top:8px}
+
     .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
     .btn{background:#2d3258;border:1px solid rgba(255,255,255,.16);color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
     .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
-    #editorModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;z-index:50;overflow:auto;padding:24px}
-    .editor{max-width:900px;margin:0 auto}
-    .editor h2{margin:0 0 10px}
-    .grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:12px}
-    @media(min-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    .row{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:12px}
-    .row .emo{font-size:36px;min-width:48px;text-align:center}
-    .row input{flex:1;border:none;border-radius:10px;padding:10px;background:#fff;color:#111}
-    .editor-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
     .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;border:1px solid rgba(255,255,255,.15);padding:10px 14px;border-radius:10px;opacity:0;transition:opacity .25s ease;z-index:60}
     .toast.show{opacity:1}
   </style>
@@ -69,7 +65,16 @@
       <div class="progress"><span id="progressFill"></span></div>
 
       <div class="choices-wrap">
-        <div class="overlay" id="overlay"><button id="revealBtn">Tap to reveal</button></div>
+        <div class="overlay" id="overlay">
+          <div class="overlay-box">
+            <h3 id="overlayTitle">Type your guess (word), then reveal</h3>
+            <div class="overlay-row" id="preGuessRow">
+              <input id="preGuessInput" type="text" placeholder="Your guess..." autocomplete="off" />
+              <button id="revealBtn">Reveal</button>
+            </div>
+            <div class="overlay-hint" id="overlayHint">Press Enter to reveal</div>
+          </div>
+        </div>
         <div id="choices" class="choices"></div>
       </div>
 
@@ -85,25 +90,12 @@
     </section>
   </div>
 
-  <!-- Editor Modal -->
-  <div id="editorModal">
-    <div class="editor">
-      <h2>Edit icon → word</h2>
-      <div id="editorGrid" class="grid"></div>
-      <div class="editor-actions">
-        <button class="btn" id="editorCancel">Cancel</button>
-        <button class="btn primary" id="editorSave">Save & Apply</button>
-      </div>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 
 <script>
 (() => {
-  const DEFAULT_DATA = {
-    "🔴":"wonderful","➕":"towards","🌊":"free","🔺":"fair choice","🟨":"fantastic","⭐":"finally","🧍‍♂️":"human","😀":"zoomed","❤️":"affectionate","🚤":"serene","🏠":"wholesome","🚴‍♂️":"movement","🚗":"speed","🚂":"momentum","✈️":"take flight","🚀":"outer space","⛩":"surface","📺":"visual","☎️":"communicate","📖":"literature","🍷":"drink from","✏️":"artistic","🔐":"security","⏰":"keeping time","🔪":"sharp","🔫":"lethal","🌳":"natural","🌻":"organic","☀️":"painting","🌙":"night sky","🌧️":"weather","⚡":"powerful","🐶":"loyal","🐱":"living","🐟":"underwater","🦜":"in the sky","👽":"weirdly","👻":"spooky","💀":"morbid","📝":"nothing","🖕":"offensive","🚫":"negative","🍆":"strangely"
-  };
+  // ------- Data (kept from previous version via localStorage) -------
+  const DEFAULT_DATA = {"🔴":"wonderful","➕":"towards","🌊":"free","🔺":"fair choice","🟨":"fantastic","⭐":"finally","🧍‍♂️":"human","😀":"zoomed","❤️":"affectionate","🚤":"serene","🏠":"wholesome","🚴‍♂️":"movement","🚗":"speed","🚂":"momentum","✈️":"take flight","🚀":"outer space","⛩":"surface","📺":"visual","☎️":"communicate","📖":"literature","🍷":"drink from","✏️":"artistic","🔐":"security","⏰":"keeping time","🔪":"sharp","🔫":"lethal","🌳":"natural","🌻":"organic","☀️":"painting","🌙":"night sky","🌧️":"weather","⚡":"powerful","🐶":"loyal","🐱":"living","🐟":"underwater","🦜":"in the sky","👽":"weirdly","👻":"spooky","💀":"morbid","📝":"nothing","🖕":"offensive","🚫":"negative","🍆":"strangely"};
   const LS_KEY_DATA = 'notesp-quiz';
   const LS_KEY_STATE = 'notesp-quiz-state-v2';
 
@@ -122,14 +114,20 @@
   }
   function saveState(){ localStorage.setItem(LS_KEY_STATE, JSON.stringify(items)); }
 
+  // ------- Elements -------
   const el = {
     prompt: document.getElementById('prompt'),
     choices: document.getElementById('choices'),
     overlay: document.getElementById('overlay'),
+    overlayTitle: document.getElementById('overlayTitle'),
+    overlayHint: document.getElementById('overlayHint'),
+    preGuessRow: document.getElementById('preGuessRow'),
+    preGuessInput: document.getElementById('preGuessInput'),
     revealBtn: document.getElementById('revealBtn'),
     ok: document.getElementById('ok'), ko: document.getElementById('ko'), acc: document.getElementById('acc'), streak: document.getElementById('streak'),
     progressFill: document.getElementById('progressFill'),
     modeLabel: document.getElementById('modeLabel'),
+    // controls
     toggleMode: document.getElementById('toggleMode'),
     reviewBtn: document.getElementById('reviewBtn'),
     editBtn: document.getElementById('editBtn'),
@@ -137,28 +135,39 @@
     downloadBtn: document.getElementById('downloadBtn'),
     uploadBtn: document.getElementById('uploadBtn'),
     uploadInput: document.getElementById('uploadInput'),
-    editorModal: document.getElementById('editorModal'),
-    editorGrid: document.getElementById('editorGrid'),
-    editorCancel: document.getElementById('editorCancel'),
-    editorSave: document.getElementById('editorSave'),
     toast: document.getElementById('toast'),
   };
 
+  // ------- Engine state -------
   let data = loadData();
   let items = loadState(data);
-  let isWordMode = false;
+  let isWordMode = false; // false: Emoji->Word (has pre-guess), true: Word->Emoji
   let lastIndex = -1;
   let questionCounter = 0;
   let correct = 0, wrong = 0, streak = 0;
 
+  // coverage + delayed review
   let cycleOrder = shuffle([...Array(items.length).keys()]);
   let cyclePtr = 0;
-  const reviewQueue = [];
+  const delayedQueue = []; // {idx, due}
 
+  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+  function normalize(s){
+      s = (s||'').toLowerCase().trim();
+      try { s = s.replace(new RegExp('[^A-Za-z0-9 ]','g'), ''); } catch(e) {}
+      s = s.replace(new RegExp(' +','g'), ' ');
+      return s;
+    }
+
+  function scheduleReview(idx){ delayedQueue.push({ idx, due: questionCounter + randInt(5,10) }); }
 
   function nextIndex(){
-    if (reviewQueue.length){ return reviewQueue.shift(); }
+    // Any due delayed reviews?
+    const dueIdx = delayedQueue.findIndex(x => x.due <= questionCounter);
+    if(dueIdx >= 0){ return delayedQueue.splice(dueIdx,1)[0].idx; }
+
+    // Coverage cycle
     if (cyclePtr < cycleOrder.length){
       const idx = cycleOrder[cyclePtr++];
       if(idx !== lastIndex) return idx;
@@ -184,9 +193,7 @@
   let currentCorrectAnswer = null;
 
   function renderQuestion(){
-    el.overlay.classList.remove('hidden');
     el.choices.innerHTML = '';
-
     currentIdx = nextIndex();
     const it = items[currentIdx];
     const promptText = isWordMode ? it.word : it.emoji;
@@ -194,32 +201,57 @@
     el.prompt.textContent = promptText;
     el.modeLabel.textContent = isWordMode ? 'Mode: Word → Emoji' : 'Mode: Emoji → Word';
 
+    // Build choices (5, including correct)
     const pool = items.map(x => isWordMode ? x.emoji : x.word);
     const choices = new Set([currentCorrectAnswer]);
-    while(choices.size < 5){
-      const cand = pool[Math.floor(Math.random()*pool.length)];
-      if(!choices.has(cand)) choices.add(cand);
-    }
+    while (choices.size < 5){ const cand = pool[Math.floor(Math.random()*pool.length)]; if(!choices.has(cand)) choices.add(cand); }
     const finalChoices = shuffle([...choices]);
 
     for(const option of finalChoices){
-      const isEmoji = isWordMode;
       const btn = document.createElement('button');
-      btn.className = 'choice' + (isEmoji ? ' emoji' : '');
+      btn.className = 'choice' + (isWordMode ? ' emoji' : '');
       btn.textContent = option;
       btn.onclick = () => onAnswer(option, btn);
       el.choices.appendChild(btn);
     }
 
+    // Configure overlay pre-guess UI
+    el.preGuessInput.value = '';
+    if(!isWordMode){
+      el.overlayTitle.textContent = 'Type your guess (word), then reveal';
+      el.overlayHint.textContent = 'Press Enter or tap Reveal';
+      el.preGuessRow.style.display = 'flex';
+      el.preGuessInput.placeholder = 'Your guess for the word...';
+      setTimeout(()=>{ el.preGuessInput.focus(); }, 10);
+    } else {
+      el.overlayTitle.textContent = 'Tap to reveal choices';
+      el.overlayHint.textContent = '';
+      el.preGuessRow.style.display = 'none';
+    }
+    el.overlay.classList.remove('hidden');
+
+    // progress
     const seenThisCycle = new Set(items.filter(i=>i.seen>0).map(i=>i.emoji));
     const pct = Math.round((Math.min(seenThisCycle.size, items.length) / items.length) * 100);
-    el.progressFill.style.width = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function applyCorrectAutoAdvance(){
+    const it = items[currentIdx];
+    it.seen++; it.lastSeen = questionCounter++;
+    correct++; streak++; it.correctStreak++; if(it.box < 5 && it.correctStreak >= 2){ it.box++; it.correctStreak = 0; }
+    lastIndex = currentIdx; saveState(); updateHud();
+    setTimeout(()=>renderQuestion(), 900);
   }
 
   function onAnswer(sel, button){
     [...document.querySelectorAll('.choice')].forEach(b=>b.classList.remove('correct','wrong'));
 
-    const isCorrect = sel === currentCorrectAnswer;
+    // Use forgiving normalization only in Emoji → Word mode (text answers)
+    const isCorrect = (!isWordMode)
+      ? (normalize(sel) === normalize(currentCorrectAnswer))
+      : (sel === currentCorrectAnswer);
+
     const it = items[currentIdx];
     it.seen++; it.lastSeen = questionCounter++;
 
@@ -230,114 +262,112 @@
     } else {
       wrong++; streak = 0; it.correctStreak = 0; it.box = 1;
       button.classList.add('wrong');
-      if(!reviewQueue.includes(currentIdx)) reviewQueue.splice(1,0,currentIdx);
-      const right = [...document.querySelectorAll('.choice')].find(b=>b.textContent===currentCorrectAnswer);
+      // schedule revisit 5–10 questions later
+      scheduleReview(currentIdx);
+      // highlight the correct option (normalized match for text mode)
+      const right = [...document.querySelectorAll('.choice')].find(b => (
+        !isWordMode ? (normalize(b.textContent) === normalize(currentCorrectAnswer))
+                     : (b.textContent === currentCorrectAnswer)
+      ));
       if(right) right.classList.add('correct');
       toast('❌ Wrong');
     }
 
-    lastIndex = currentIdx;
-    saveState();
-    updateHud();
-
+    lastIndex = currentIdx; saveState(); updateHud();
     setTimeout(()=>renderQuestion(), 900);
   }
 
   function updateHud(){
     const total = correct + wrong;
-    el.ok.textContent = String(correct);
-    el.ko.textContent = String(wrong);
-    el.acc.textContent = total ? Math.round((correct/total)*100)+'%' : '0%';
-    el.streak.textContent = String(streak);
+    document.getElementById('ok').textContent = String(correct);
+    document.getElementById('ko').textContent = String(wrong);
+    document.getElementById('acc').textContent = total ? Math.round((correct/total)*100)+'%' : '0%';
+    document.getElementById('streak').textContent = String(streak);
   }
 
-  el.revealBtn.addEventListener('click', ()=> el.overlay.classList.add('hidden'));
-  el.toggleMode.addEventListener('click', ()=>{ isWordMode = !isWordMode; renderQuestion(); });
+  // Overlay interactions
+  el.revealBtn.addEventListener('click', handleReveal);
+  el.preGuessInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ handleReveal(); }});
 
-  let reviewOpen = false;
-  el.reviewBtn.addEventListener('click', ()=>{
-    reviewOpen = !reviewOpen;
-    if(reviewOpen){
-      el.overlay.classList.add('hidden');
-      const hist = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
-      el.choices.innerHTML = '';
-      const last = hist.slice(-12).reverse();
-      for(const h of last){
-        const div = document.createElement('div');
-        div.className='choice';
-        div.style.justifyContent='space-between';
-        div.innerHTML = `<span>${h.prompt}</span><span>${h.selected === h.correct ? '✅' : '❌'} <small style="opacity:.8">(${h.correct})</small></span>`;
-        el.choices.appendChild(div);
+  function handleReveal(){
+    // Only evaluate pre-guess in Emoji→Word mode
+    const pre = normalize(el.preGuessInput.value);
+    const isPreGuessApplicable = !isWordMode;
+    el.overlay.classList.add('hidden');
+
+    if(isPreGuessApplicable && pre){
+      const correctWord = normalize(currentCorrectAnswer);
+      if(pre === correctWord){
+        // highlight correct and auto-advance, count as correct
+        const right = [...document.querySelectorAll('.choice')].find(b=>normalize(b.textContent)===correctWord);
+        if(right) right.classList.add('correct');
+        toast('✅ Nice! Your guess was right.');
+        applyCorrectAutoAdvance();
+        return;
+      } else {
+        toast('Not quite — choose one below.');
+        // do NOT count as wrong yet; user still answers
       }
-    } else {
-      renderQuestion();
+    }
+  }
+
+  // Controls
+  document.getElementById('toggleMode').addEventListener('click', ()=>{ isWordMode = !isWordMode; renderQuestion(); });
+  document.getElementById('reviewBtn').addEventListener('click', ()=>{
+    // Simple toggle: show last 12 attempts
+    el.overlay.classList.add('hidden');
+    const hist = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
+    el.choices.innerHTML = '';
+    const last = hist.slice(-12).reverse();
+    for(const h of last){
+      const div = document.createElement('div');
+      div.className='choice';
+      div.style.justifyContent='space-between';
+      div.innerHTML = `<span>${h.prompt}</span><span>${h.selected === h.correct ? '✅' : '❌'} <small style="opacity:.8">(${h.correct})</small></span>`;
+      el.choices.appendChild(div);
     }
   });
 
-  el.editBtn.addEventListener('click', openEditor);
-  el.resetBtn.addEventListener('click', ()=>{
+  document.getElementById('editBtn').addEventListener('click', ()=>{
+    // open a simple alert to suggest using the previous advanced editor build
+    alert('Editor is available in the PWA build. For now, use Download/Upload JSON to modify pairs.');
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
     if(confirm('Reset words and progress to defaults?')){
       saveData(DEFAULT_DATA); data = loadData(); items = loadState(data);
-      correct=0;wrong=0;streak=0; lastIndex=-1; cycleOrder=shuffle([...Array(items.length).keys()]); cyclePtr=0; reviewQueue.length=0;
+      correct=0; wrong=0; streak=0; lastIndex=-1; cycleOrder=shuffle([...Array(items.length).keys()]); cyclePtr=0; delayedQueue.length=0;
       saveState(); updateHud(); renderQuestion(); toast('Reset complete');
     }
   });
 
-  el.downloadBtn.addEventListener('click', ()=>{
+  document.getElementById('downloadBtn').addEventListener('click', ()=>{
     const blob = new Blob([JSON.stringify(Object.fromEntries(items.map(i=>[i.emoji,i.word])), null, 2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `notesp-quiz-${new Date().toISOString().slice(0,10)}.json`; a.click();
   });
-  el.uploadBtn.addEventListener('click', ()=> el.uploadInput.click());
-  el.uploadInput.addEventListener('change', e=>{
+  document.getElementById('uploadBtn').addEventListener('click', ()=> document.getElementById('uploadInput').click());
+  document.getElementById('uploadInput').addEventListener('change', e=>{
     const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => {
-      try { const obj = JSON.parse(r.result); saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; renderQuestion(); toast('Words loaded'); }
+      try { const obj = JSON.parse(r.result); saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; delayedQueue.length=0; renderQuestion(); toast('Words loaded'); }
       catch { alert('Invalid JSON file.'); }
     }; r.readAsText(f);
   });
 
-  function openEditor(){
-    el.editorGrid.innerHTML = '';
-    for(const it of items){
-      const wrap = document.createElement('div');
-      wrap.className = 'row';
-      wrap.innerHTML = `<div class="emo">${it.emoji}</div><input type="text" value="${it.word}" data-emoji="${it.emoji}"/>`;
-      el.editorGrid.appendChild(wrap);
-    }
-    el.editorModal.style.display = 'block';
-  }
-  el.editorCancel.addEventListener('click', ()=> el.editorModal.style.display='none');
-  el.editorSave.addEventListener('click', ()=>{
-    const inputs = el.editorGrid.querySelectorAll('input');
-    const obj = {}; for(const inp of inputs){ const key = inp.dataset.emoji; const val = inp.value.trim(); if(!key || !val) return alert('All rows must have a value.'); obj[key]=val; }
-    saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; el.editorModal.style.display='none'; renderQuestion(); toast('Saved');
-  });
-
+  // History capture
   function pushHistory(entry){
     const arr = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
     arr.push(entry); if(arr.length>200) arr.shift();
     localStorage.setItem('notesp-quiz-history', JSON.stringify(arr));
   }
-
   const _onAnswer = onAnswer;
-  onAnswer = function(sel, btn){
-    const promptVal = el.prompt.textContent;
-    pushHistory({ prompt: promptVal, selected: sel, correct: currentCorrectAnswer, ts: Date.now() });
-    _onAnswer(sel, btn);
-  }
+  onAnswer = function(sel, btn){ const promptVal = el.prompt.textContent; pushHistory({ prompt: promptVal, selected: sel, correct: currentCorrectAnswer, ts: Date.now() }); _onAnswer(sel, btn); }
 
+  // boot
   updateHud();
   renderQuestion();
 
-  function toast(msg){ el.toast.textContent = msg; el.toast.classList.add('show'); setTimeout(()=>el.toast.classList.remove('show'), 900); }
+  function toast(msg){ el.toast.textContent = msg; el.toast.classList.add('show'); setTimeout(()=>el.toast.classList.remove('show'), 1100); }
 })();
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js');
-  });
-}
 </script>
 </body>
 </html>

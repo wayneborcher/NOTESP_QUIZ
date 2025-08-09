@@ -2,235 +2,342 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>not.ESP Quiz</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOT.ESP QUIZ — v2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#141625"/>
   <style>
-    body {
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      font-family: 'Segoe UI', sans-serif;
-      color: #fff;
-      text-align: center;
-      padding: 40px 20px;
-      box-sizing: border-box;
+    :root{
+      --bg1:#141625;--bg2:#2a2e45;--accent:#7c5cff;--accent-2:#22c55e;--danger:#ef4444;--card:rgba(255,255,255,.08);
+      --text:#ffffff;--muted:#c7c9d1;--gold:#ffd54a;
     }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-    #score {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-      color: #FFD700;
-    }
-    .quiz-box {
-      background-color: rgba(255, 255, 255, 0.08);
-      padding: 30px;
-      border-radius: 15px;
-      display: inline-block;
-      max-width: 100%;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    }
-    .prompt {
-      font-size: 4em;
-      margin-bottom: 30px;
-      word-wrap: break-word;
-    }
-    .choices {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .choices button {
-      background-color: #333;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      margin: 10px;
-      font-size: 1.2em;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-      flex: 1 1 calc(50% - 20px);
-      max-width: 200px;
-    }
-    .choices button:hover {
-      background-color: #5c6bc0;
-      transform: scale(1.05);
-    }
-    .emoji-button {
-      font-size: 2.5em !important;
-      padding: 15px 0 !important;
-    }
-    #result {
-      font-size: 1.5em;
-      margin-top: 20px;
-    }
-    #mode-toggle {
-      margin-top: 30px;
-      font-size: 1em;
-      padding: 10px 20px;
-      background-color: #666;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-    }
-
-    @keyframes correctPulse {
-      0% { background-color: #4CAF50; transform: scale(1); }
-      50% { background-color: #81C784; transform: scale(1.1); }
-      100% { background-color: #4CAF50; transform: scale(1); }
-    }
-
-    @keyframes wrongShake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    .correct-animate {
-      animation: correctPulse 0.5s ease;
-    }
-
-    .wrong-animate {
-      animation: wrongShake 0.4s ease;
-    }
-
-    @media screen and (max-width: 600px) {
-      .prompt {
-        font-size: 3em;
-      }
-      .choices button {
-        font-size: 1em;
-        padding: 10px;
-      }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 10% 10%,var(--bg2),transparent),linear-gradient(135deg,var(--bg1),#191b2e);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+    .app{width:100%;max-width:900px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .title{font-weight:800;letter-spacing:.5px;font-size:clamp(20px,3vw,28px)}
+    .scorebar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .chip{background:var(--card);border:1px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:999px;font-size:13px}
+    .chip b{color:var(--gold)}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:16px;padding:20px}
+    .prompt{font-size:clamp(44px,8vw,84px);line-height:1;margin:8px 0 4px;text-align:center}
+    .sub{margin:0 0 6px;color:var(--muted);text-align:center}
+    .progress{height:8px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:10px auto 0;width:100%}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#60a5fa);width:0%}
+    .choices-wrap{position:relative;margin-top:18px}
+    .choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    @media (min-width:760px){.choices{grid-template-columns:repeat(5,minmax(0,1fr))}}
+    .choice{display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(255,255,255,.22);background:#1e2143;padding:14px 12px;border-radius:12px;font-size:clamp(18px,2.6vw,20px);line-height:1.25;color:#ffffff;font-weight:600;letter-spacing:.2px;cursor:pointer;transition:transform .12s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+    .choice.emoji{font-size:clamp(34px,5.8vw,44px);padding-block:18px;color:#ffffff}
+    .choice:hover{transform:translateY(-2px);background:#2a2e5a;border-color:rgba(255,255,255,.35);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+    .choice.correct{background:linear-gradient(90deg,rgba(34,197,94,.28),rgba(34,197,94,.18));border-color:#22c55e;color:#ffffff}
+    .choice.wrong{background:linear-gradient(90deg,rgba(239,68,68,.32),rgba(239,68,68,.18));border-color:#ef4444;color:#ffffff}
+    .overlay{position:absolute;inset:0;background:rgba(0,0,0,1);display:flex;align-items:center;justify-content:center;border-radius:12px;opacity:1;transition:opacity .35s ease;z-index:5}
+    .overlay.hidden{opacity:0;pointer-events:none}
+    .overlay button{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none;border-radius:999px;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+    .btn{background:#2d3258;border:1px solid rgba(255,255,255,.16);color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#60a5fa);border:none}
+    #editorModal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;z-index:50;overflow:auto;padding:24px}
+    .editor{max-width:900px;margin:0 auto}
+    .editor h2{margin:0 0 10px}
+    .grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:12px}
+    @media(min-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .row{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);padding:10px;border-radius:12px}
+    .row .emo{font-size:36px;min-width:48px;text-align:center}
+    .row input{flex:1;border:none;border-radius:10px;padding:10px;background:#fff;color:#111}
+    .editor-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;border:1px solid rgba(255,255,255,.15);padding:10px 14px;border-radius:10px;opacity:0;transition:opacity .25s ease;z-index:60}
+    .toast.show{opacity:1}
   </style>
 </head>
 <body>
-  <h1>not.ESP Quiz</h1>
-  <div id="score">Correct: 0 | Wrong: 0 | Total: 0</div>
-  <div class="quiz-box">
-    <div class="prompt" id="prompt"></div>
-    <div class="choices" id="choices"></div>
-    <div id="result"></div>
-    <button id="mode-toggle" onclick="toggleMode()">Switch Mode</button>
+  <div class="app">
+    <header>
+      <div class="title">NOT.ESP QUIZ</div>
+      <div class="scorebar">
+        <div class="chip">✅ <b id="ok">0</b></div>
+        <div class="chip">❌ <b id="ko">0</b></div>
+        <div class="chip">📊 Acc <b id="acc">0%</b></div>
+        <div class="chip">🔥 Streak <b id="streak">0</b></div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="sub" id="modeLabel">Mode: Emoji → Word</div>
+      <div class="prompt" id="prompt">🙂</div>
+      <div class="progress"><span id="progressFill"></span></div>
+
+      <div class="choices-wrap">
+        <div class="overlay" id="overlay"><button id="revealBtn">Tap to reveal</button></div>
+        <div id="choices" class="choices"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="toggleMode">Switch Mode</button>
+        <button class="btn" id="reviewBtn">Review</button>
+        <button class="btn" id="editBtn">Edit Icons</button>
+        <button class="btn" id="resetBtn">Reset</button>
+        <button class="btn" id="downloadBtn">Download JSON</button>
+        <input type="file" id="uploadInput" accept="application/json" hidden />
+        <button class="btn" id="uploadBtn">Upload JSON</button>
+      </div>
+    </section>
   </div>
 
-  <audio id="correct-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_493b5c4062.mp3?filename=correct-answer-2-89665.mp3" preload="auto"></audio>
-  <audio id="wrong-sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f61b637fef.mp3?filename=wrong-answer-2-89674.mp3" preload="auto"></audio>
+  <!-- Editor Modal -->
+  <div id="editorModal">
+    <div class="editor">
+      <h2>Edit icon → word</h2>
+      <div id="editorGrid" class="grid"></div>
+      <div class="editor-actions">
+        <button class="btn" id="editorCancel">Cancel</button>
+        <button class="btn primary" id="editorSave">Save & Apply</button>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    const data = {
-      "🔴": "wonderful", "➕": "towards", "🌊": "free", "🔺": "fair choice",
-      "🟨": "fantastic", "⭐": "finally", "🧍‍♂️": "human", "😀": "zoomed",
-      "❤️": "affectionate", "🚤": "serene", "🏠": "wholesome", "🚴‍♂️": "movement",
-      "🚗": "speed", "🚂": "momentum", "✈️": "take flight", "🚀": "outer space",
-      "⛩": "surface", "📺": "visual", "☎️": "communicate", "📖": "literature",
-      "🍷": "drink from", "✏️": "artistic", "🔐": "security", "⏰": "keeping time",
-      "🔪": "sharp", "🔫": "lethal", "🌳": "natural", "🌻": "organic",
-      "☀️": "painting", "🌙": "night sky", "🌧️": "weather", "⚡": "powerful",
-      "🐶": "loyal", "🐱": "living", "🐟": "underwater", "🦜": "in the sky",
-      "👽": "weirdly", "👻": "spooky", "💀": "morbid", "📝": "nothing",
-      "🖕": "offensive", "🚫": "negative", "🍆": "strangely"
-    };
+  <div class="toast" id="toast"></div>
 
-    const entries = Object.entries(data);
-    let scoreCorrect = 0, scoreWrong = 0;
-    let isWordMode = false;
-    let correctAnswer = null;
+<script>
+(() => {
+  const DEFAULT_DATA = {
+    "🔴":"wonderful","➕":"towards","🌊":"free","🔺":"fair choice","🟨":"fantastic","⭐":"finally","🧍‍♂️":"human","😀":"zoomed","❤️":"affectionate","🚤":"serene","🏠":"wholesome","🚴‍♂️":"movement","🚗":"speed","🚂":"momentum","✈️":"take flight","🚀":"outer space","⛩":"surface","📺":"visual","☎️":"communicate","📖":"literature","🍷":"drink from","✏️":"artistic","🔐":"security","⏰":"keeping time","🔪":"sharp","🔫":"lethal","🌳":"natural","🌻":"organic","☀️":"painting","🌙":"night sky","🌧️":"weather","⚡":"powerful","🐶":"loyal","🐱":"living","🐟":"underwater","🦜":"in the sky","👽":"weirdly","👻":"spooky","💀":"morbid","📝":"nothing","🖕":"offensive","🚫":"negative","🍆":"strangely"
+  };
+  const LS_KEY_DATA = 'notesp-quiz';
+  const LS_KEY_STATE = 'notesp-quiz-state-v2';
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+  function loadData(){ try { return JSON.parse(localStorage.getItem(LS_KEY_DATA)) || {...DEFAULT_DATA}; } catch { return {...DEFAULT_DATA}; } }
+  function saveData(obj){ localStorage.setItem(LS_KEY_DATA, JSON.stringify(obj)); }
+
+  function loadState(data){
+    const base = Object.keys(data).map(k=>({ emoji:k, word:data[k], box:1, seen:0, correctStreak:0, lastSeen:-1 }));
+    try{
+      const saved = JSON.parse(localStorage.getItem(LS_KEY_STATE));
+      if(!saved) return base;
+      const map = new Map(base.map(i=>[i.emoji,i]));
+      for(const it of saved){ if(map.has(it.emoji)){ Object.assign(map.get(it.emoji), it); } }
+      return [...map.values()];
+    }catch{ return base; }
+  }
+  function saveState(){ localStorage.setItem(LS_KEY_STATE, JSON.stringify(items)); }
+
+  const el = {
+    prompt: document.getElementById('prompt'),
+    choices: document.getElementById('choices'),
+    overlay: document.getElementById('overlay'),
+    revealBtn: document.getElementById('revealBtn'),
+    ok: document.getElementById('ok'), ko: document.getElementById('ko'), acc: document.getElementById('acc'), streak: document.getElementById('streak'),
+    progressFill: document.getElementById('progressFill'),
+    modeLabel: document.getElementById('modeLabel'),
+    toggleMode: document.getElementById('toggleMode'),
+    reviewBtn: document.getElementById('reviewBtn'),
+    editBtn: document.getElementById('editBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    downloadBtn: document.getElementById('downloadBtn'),
+    uploadBtn: document.getElementById('uploadBtn'),
+    uploadInput: document.getElementById('uploadInput'),
+    editorModal: document.getElementById('editorModal'),
+    editorGrid: document.getElementById('editorGrid'),
+    editorCancel: document.getElementById('editorCancel'),
+    editorSave: document.getElementById('editorSave'),
+    toast: document.getElementById('toast'),
+  };
+
+  let data = loadData();
+  let items = loadState(data);
+  let isWordMode = false;
+  let lastIndex = -1;
+  let questionCounter = 0;
+  let correct = 0, wrong = 0, streak = 0;
+
+  let cycleOrder = shuffle([...Array(items.length).keys()]);
+  let cyclePtr = 0;
+  const reviewQueue = [];
+
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+  function nextIndex(){
+    if (reviewQueue.length){ return reviewQueue.shift(); }
+    if (cyclePtr < cycleOrder.length){
+      const idx = cycleOrder[cyclePtr++];
+      if(idx !== lastIndex) return idx;
+    }
+    if (cyclePtr >= cycleOrder.length){
+      const weights = items.map((it,idx)=>({ idx, w: Math.max(1, (6 - it.box)) }));
+      cycleOrder = [];
+      while (weights.length){
+        const total = weights.reduce((s,o)=>s+o.w,0);
+        let r = Math.random()*total; let pick=0;
+        for(let i=0;i<weights.length;i++){ r -= weights[i].w; if(r<=0){ pick=i; break; } }
+        cycleOrder.push(weights[pick].idx);
+        weights.splice(pick,1);
       }
-      return array;
+      cyclePtr = 0;
+    }
+    const idx = cycleOrder[cyclePtr++];
+    if (idx === lastIndex && cyclePtr < cycleOrder.length) return cycleOrder[cyclePtr++];
+    return idx;
+  }
+
+  let currentIdx = -1;
+  let currentCorrectAnswer = null;
+
+  function renderQuestion(){
+    el.overlay.classList.remove('hidden');
+    el.choices.innerHTML = '';
+
+    currentIdx = nextIndex();
+    const it = items[currentIdx];
+    const promptText = isWordMode ? it.word : it.emoji;
+    currentCorrectAnswer = isWordMode ? it.emoji : it.word;
+    el.prompt.textContent = promptText;
+    el.modeLabel.textContent = isWordMode ? 'Mode: Word → Emoji' : 'Mode: Emoji → Word';
+
+    const pool = items.map(x => isWordMode ? x.emoji : x.word);
+    const choices = new Set([currentCorrectAnswer]);
+    while(choices.size < 5){
+      const cand = pool[Math.floor(Math.random()*pool.length)];
+      if(!choices.has(cand)) choices.add(cand);
+    }
+    const finalChoices = shuffle([...choices]);
+
+    for(const option of finalChoices){
+      const isEmoji = isWordMode;
+      const btn = document.createElement('button');
+      btn.className = 'choice' + (isEmoji ? ' emoji' : '');
+      btn.textContent = option;
+      btn.onclick = () => onAnswer(option, btn);
+      el.choices.appendChild(btn);
     }
 
-    function updateScore() {
-      const total = scoreCorrect + scoreWrong;
-      document.getElementById("score").textContent = `Correct: ${scoreCorrect} | Wrong: ${scoreWrong} | Total: ${total}`;
+    const seenThisCycle = new Set(items.filter(i=>i.seen>0).map(i=>i.emoji));
+    const pct = Math.round((Math.min(seenThisCycle.size, items.length) / items.length) * 100);
+    el.progressFill.style.width = pct + '%';
+  }
+
+  function onAnswer(sel, button){
+    [...document.querySelectorAll('.choice')].forEach(b=>b.classList.remove('correct','wrong'));
+
+    const isCorrect = sel === currentCorrectAnswer;
+    const it = items[currentIdx];
+    it.seen++; it.lastSeen = questionCounter++;
+
+    if(isCorrect){
+      correct++; streak++; it.correctStreak++; if(it.box < 5 && it.correctStreak >= 2){ it.box++; it.correctStreak = 0; }
+      button.classList.add('correct');
+      toast('✅ Correct');
+    } else {
+      wrong++; streak = 0; it.correctStreak = 0; it.box = 1;
+      button.classList.add('wrong');
+      if(!reviewQueue.includes(currentIdx)) reviewQueue.splice(1,0,currentIdx);
+      const right = [...document.querySelectorAll('.choice')].find(b=>b.textContent===currentCorrectAnswer);
+      if(right) right.classList.add('correct');
+      toast('❌ Wrong');
     }
 
-    function generateQuestion() {
-      const container = document.getElementById("choices");
+    lastIndex = currentIdx;
+    saveState();
+    updateHud();
 
-      // Reset all styles and content
-      Array.from(container.children).forEach(btn => {
-        btn.style.backgroundColor = "";
-        btn.classList.remove("correct-animate", "wrong-animate");
-      });
+    setTimeout(()=>renderQuestion(), 900);
+  }
 
-      container.innerHTML = "";
-      document.getElementById("result").textContent = "";
+  function updateHud(){
+    const total = correct + wrong;
+    el.ok.textContent = String(correct);
+    el.ko.textContent = String(wrong);
+    el.acc.textContent = total ? Math.round((correct/total)*100)+'%' : '0%';
+    el.streak.textContent = String(streak);
+  }
 
-      const [emoji, word] = entries[Math.floor(Math.random() * entries.length)];
-      correctAnswer = isWordMode ? emoji : word;
-      document.getElementById("prompt").textContent = isWordMode ? word : emoji;
+  el.revealBtn.addEventListener('click', ()=> el.overlay.classList.add('hidden'));
+  el.toggleMode.addEventListener('click', ()=>{ isWordMode = !isWordMode; renderQuestion(); });
 
-      const options = new Set([correctAnswer]);
-      while (options.size < 5) {
-        const rand = entries[Math.floor(Math.random() * entries.length)];
-        const opt = isWordMode ? rand[0] : rand[1];
-        options.add(opt);
+  let reviewOpen = false;
+  el.reviewBtn.addEventListener('click', ()=>{
+    reviewOpen = !reviewOpen;
+    if(reviewOpen){
+      el.overlay.classList.add('hidden');
+      const hist = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
+      el.choices.innerHTML = '';
+      const last = hist.slice(-12).reverse();
+      for(const h of last){
+        const div = document.createElement('div');
+        div.className='choice';
+        div.style.justifyContent='space-between';
+        div.innerHTML = `<span>${h.prompt}</span><span>${h.selected === h.correct ? '✅' : '❌'} <small style="opacity:.8">(${h.correct})</small></span>`;
+        el.choices.appendChild(div);
       }
-
-      shuffle([...options]).forEach(choice => {
-        const button = document.createElement("button");
-        button.innerHTML = choice;
-        if (isWordMode) button.classList.add("emoji-button");
-        button.onclick = () => checkAnswer(choice);
-        container.appendChild(button);
-      });
+    } else {
+      renderQuestion();
     }
+  });
 
-    function checkAnswer(selected) {
-      const result = document.getElementById("result");
-      const buttons = document.querySelectorAll("#choices button");
-      const correctSound = document.getElementById("correct-sound");
-      const wrongSound = document.getElementById("wrong-sound");
-
-      buttons.forEach(btn => {
-        const value = btn.innerHTML;
-        btn.disabled = true;
-        if (value === correctAnswer) {
-          btn.style.backgroundColor = "#4CAF50";
-          btn.classList.add("correct-animate");
-        } else if (value === selected) {
-          btn.style.backgroundColor = "#E53935";
-          btn.classList.add("wrong-animate");
-        } else {
-          btn.style.backgroundColor = "#333";
-        }
-      });
-
-      if (selected === correctAnswer) {
-        scoreCorrect++;
-        correctSound.play();
-        result.innerHTML = "✅ Correct!";
-      } else {
-        scoreWrong++;
-        wrongSound.play();
-        result.innerHTML = `❌ Wrong! Correct answer was: <strong>${correctAnswer}</strong>`;
-      }
-
-      updateScore();
-      setTimeout(generateQuestion, 1700);
+  el.editBtn.addEventListener('click', openEditor);
+  el.resetBtn.addEventListener('click', ()=>{
+    if(confirm('Reset words and progress to defaults?')){
+      saveData(DEFAULT_DATA); data = loadData(); items = loadState(data);
+      correct=0;wrong=0;streak=0; lastIndex=-1; cycleOrder=shuffle([...Array(items.length).keys()]); cyclePtr=0; reviewQueue.length=0;
+      saveState(); updateHud(); renderQuestion(); toast('Reset complete');
     }
+  });
 
-    function toggleMode() {
-      isWordMode = !isWordMode;
-      document.getElementById("mode-toggle").textContent = isWordMode ? "Switch to Emoji Quiz" : "Switch to Word Quiz";
-      generateQuestion();
+  el.downloadBtn.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(Object.fromEntries(items.map(i=>[i.emoji,i.word])), null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `notesp-quiz-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  });
+  el.uploadBtn.addEventListener('click', ()=> el.uploadInput.click());
+  el.uploadInput.addEventListener('change', e=>{
+    const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => {
+      try { const obj = JSON.parse(r.result); saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; renderQuestion(); toast('Words loaded'); }
+      catch { alert('Invalid JSON file.'); }
+    }; r.readAsText(f);
+  });
+
+  function openEditor(){
+    el.editorGrid.innerHTML = '';
+    for(const it of items){
+      const wrap = document.createElement('div');
+      wrap.className = 'row';
+      wrap.innerHTML = `<div class="emo">${it.emoji}</div><input type="text" value="${it.word}" data-emoji="${it.emoji}"/>`;
+      el.editorGrid.appendChild(wrap);
     }
+    el.editorModal.style.display = 'block';
+  }
+  el.editorCancel.addEventListener('click', ()=> el.editorModal.style.display='none');
+  el.editorSave.addEventListener('click', ()=>{
+    const inputs = el.editorGrid.querySelectorAll('input');
+    const obj = {}; for(const inp of inputs){ const key = inp.dataset.emoji; const val = inp.value.trim(); if(!key || !val) return alert('All rows must have a value.'); obj[key]=val; }
+    saveData(obj); data = loadData(); items = loadState(data); cycleOrder = shuffle([...Array(items.length).keys()]); cyclePtr=0; el.editorModal.style.display='none'; renderQuestion(); toast('Saved');
+  });
 
-    window.onload = () => {
-      updateScore();
-      generateQuestion();
-    };
-  </script>
+  function pushHistory(entry){
+    const arr = JSON.parse(localStorage.getItem('notesp-quiz-history')||'[]');
+    arr.push(entry); if(arr.length>200) arr.shift();
+    localStorage.setItem('notesp-quiz-history', JSON.stringify(arr));
+  }
+
+  const _onAnswer = onAnswer;
+  onAnswer = function(sel, btn){
+    const promptVal = el.prompt.textContent;
+    pushHistory({ prompt: promptVal, selected: sel, correct: currentCorrectAnswer, ts: Date.now() });
+    _onAnswer(sel, btn);
+  }
+
+  updateHud();
+  renderQuestion();
+
+  function toast(msg){ el.toast.textContent = msg; el.toast.classList.add('show'); setTimeout(()=>el.toast.classList.remove('show'), 900); }
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js');
+  });
+}
+</script>
 </body>
 </html>

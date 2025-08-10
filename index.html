@@ -2,17 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>NOT.ESP QUIZ — PWA</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#141625" />
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
-    }
-  </script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'))}</script>
 </head>
 <body>
   <div class="app">
@@ -23,16 +19,16 @@
       <div class="scorebar">
         <div class="chip">✅ <b id="ok">0</b></div>
         <div class="chip">❌ <b id="ko">0</b></div>
-        <div class="chip">📊 Acc <b id="acc">0%</b></div>
-        <div class="chip">🔥 Streak <b id="streak">0</b></div>
+        <div class="chip hide-sm">📊 <b id="acc">0%</b></div>
+        <div class="chip hide-sm">🔥 <b id="streak">0</b></div>
       </div>
     </header>
 
     <section class="card">
       <nav class="tabs" role="tablist">
-        <button class="tab" data-mode="0" role="tab" aria-selected="false">Emoji → Word (Type)</button>
-        <button class="tab" data-mode="1" role="tab" aria-selected="false">Word → Emoji (Icons)</button>
-        <button class="tab" data-mode="2" role="tab" aria-selected="false">Emoji → Word (Words)</button>
+        <button class="tab" data-mode="0" role="tab" aria-selected="false">Emoji → Word</button>
+        <button class="tab" data-mode="1" role="tab" aria-selected="false">Word → Emoji</button>
+        <button class="tab" data-mode="2" role="tab" aria-selected="false">Emoji → Words</button>
       </nav>
 
       <div class="mode" id="modeLabel">Mode</div>
@@ -41,12 +37,12 @@
       <div class="mc-region">
         <div class="overlay hidden" id="overlay">
           <div class="overlay-box">
-            <h3 id="overlayTitle">Type your guess (word), then reveal</h3>
+            <h3 id="overlayTitle">Type your guess, then reveal</h3>
             <div class="overlay-row" id="preGuessRow">
-              <input id="preGuessInput" type="text" placeholder="Your guess..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" />
+              <input id="preGuessInput" type="text" placeholder="Your guess…" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" />
               <button id="revealBtn" class="btn primary">Reveal</button>
             </div>
-            <div class="overlay-hint" id="overlayHint">Press Enter to reveal</div>
+            <div class="overlay-hint" id="overlayHint">Enter to reveal</div>
           </div>
         </div>
 
@@ -71,10 +67,10 @@
         <button id="editorExport" class="btn">Export JSON</button>
         <input type="file" id="editorImportFile" accept="application/json" hidden />
         <button id="editorImport" class="btn">Import JSON</button>
-        <button id="editorReset" class="btn danger">Reset to Defaults</button>
+        <button id="editorReset" class="btn danger">Reset</button>
       </div>
       <div id="editorList" class="editor-list"></div>
-      <div class="editor-foot">Changes persist in your browser. Export for backup.</div>
+      <div class="editor-foot">Changes persist locally. Export for backup.</div>
     </div>
   </div>
 
@@ -87,7 +83,7 @@
         <button id="pickerClose" class="btn ghost">Close</button>
       </div>
       <div id="pickerGrid" class="picker-grid"></div>
-      <div class="picker-foot">Tip: Icons must be unique in your set.</div>
+      <div class="picker-foot">Icons must be unique.</div>
     </div>
   </div>
 
